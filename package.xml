@@ -3,16 +3,28 @@
 <package format="3">
   <name>object_stop</name>
   <version>0.0.0</version>
-  <description>TODO: Package description</description>
-  <maintainer email="s21c1103bk@s.chibakoudai.jp">kenzo-fujisaki</maintainer>
-  <license>TODO: License declaration</license>
+  <description>stop at an obstacle</description>
+  <maintainer email="ken.nfsc10@gmail.com">Kenzo Fujisaki</maintainer>
+  <license>Apache-2.0</license>
 
-  <buildtool_depend>ament_cmake</buildtool_depend>
+  <buildtool_depend>ament_cmake_auto</buildtool_depend>
+
+  <depend>rclcpp</depend>
+  <depend>rclcpp_components</depend>
+  <depend>std_msgs</depend>
+  <depend>ros2launch</depend>
+  <depend>nav2_common</depend>
+  <depend>gazebo_ros_pkgs</depend>
+  <depend>geometry_msgs</depend>
+  <depend>nav_msgs</depend>
+  <depend>sensor_msgs</depend>
+  <depend>tf2</depend>
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
 
   <export>
     <build_type>ament_cmake</build_type>
+    <gazebo_ros gazebo_model_path="${prefix}/models"/>
   </export>
 </package>

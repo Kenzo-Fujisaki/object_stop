@@ -39,32 +39,32 @@
 #define TB3_RIGHT_STOP 2
 #define TB3_LEFT_STOP 3
 
-class Turtlebot3Drive : public rclcpp::Node
+class Object_stop : public rclcpp::Node
 {
 public:
-  Turtlebot3Drive();
-  ~Turtlebot3Drive();
+    Object_stop();
+    ~Object_stop();
 
 private:
   // ROS topic publishers
-  rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr cmd_vel_pub_;
+    rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr cmd_vel_pub_;
 
   // ROS topic subscribers
-  rclcpp::Subscription<sensor_msgs::msg::LaserScan>::SharedPtr scan_sub_;
-  rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr odom_sub_;
+    rclcpp::Subscription<sensor_msgs::msg::LaserScan>::SharedPtr scan_sub_;
+    rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr odom_sub_;
 
   // Variables
-  double robot_pose_;
-  double prev_robot_pose_;
-  double scan_data_[3];
+    double robot_pose_;
+    double prev_robot_pose_;
+    double scan_data_[3];
 
   // ROS timer
-  rclcpp::TimerBase::SharedPtr update_timer_;
+    rclcpp::TimerBase::SharedPtr update_timer_;
 
   // Function prototypes
-  void update_callback();
-  void update_cmd_vel(double linear, double angular);
-  void scan_callback(const sensor_msgs::msg::LaserScan::SharedPtr msg);
-  void odom_callback(const nav_msgs::msg::Odometry::SharedPtr msg);
+    void update_callback();
+    void update_cmd_vel(double linear, double angular);
+    void scan_callback(const sensor_msgs::msg::LaserScan::SharedPtr msg);
+    void odom_callback(const nav_msgs::msg::Odometry::SharedPtr msg);
 };
 #endif  // TURTLEBOT3_GAZEBO__TURTLEBOT3_DRIVE_HPP_
