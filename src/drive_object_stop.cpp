@@ -116,53 +116,53 @@ void Object_stop::update_callback()
 
     switch (turtlebot3_state_num) {
         case GET_TB3_DIRECTION:
-        if (scan_data_[CENTER] > check_forward_dist) {
-            if (scan_data_[LEFT] < check_side_dist) {
+            if (scan_data_[CENTER] > check_forward_dist) {
+                if (scan_data_[LEFT] < check_side_dist) {
+                    prev_robot_pose_ = robot_pose_;
+                    turtlebot3_state_num = TB3_RIGHT_STOP;
+                }
+                else if (scan_data_[RIGHT] < check_side_dist) {
+                    prev_robot_pose_ = robot_pose_;
+                    turtlebot3_state_num = TB3_LEFT_STOP;
+                }
+                else {
+                    turtlebot3_state_num =TB3_STOP_FORWARD;
+                }
+            }
+
+            if (scan_data_[CENTER] < check_forward_dist) {
                 prev_robot_pose_ = robot_pose_;
                 turtlebot3_state_num = TB3_RIGHT_STOP;
             }
-            else if (scan_data_[RIGHT] < check_side_dist) {
-                prev_robot_pose_ = robot_pose_;
-                turtlebot3_state_num = TB3_LEFT_STOP;
+            break;
+
+        case TB3_STOP_FORWARD:
+            update_cmd_vel(LINEAR_VELOCITY, 0.0);
+            turtlebot3_state_num = GET_TB3_DIRECTION;
+            break;
+
+        case TB3_RIGHT_STOP:
+            if (fabs(prev_robot_pose_ - robot_pose_) >= escape_range) {
+                turtlebot3_state_num = GET_TB3_DIRECTION;
             }
             else {
-                turtlebot3_state_num =TB3_STOP_FORWARD;
+                update_cmd_vel(0.0, -1 * ANGULAR_VELOCITY);
             }
-        }
+            break;
 
-        if (scan_data_[CENTER] < check_forward_dist) {
-            prev_robot_pose_ = robot_pose_;
-            turtlebot3_state_num = TB3_RIGHT_STOP;
-        }
-        break;
+        case TB3_LEFT_STOP:
+            if (fabs(prev_robot_pose_ - robot_pose_) >= escape_range) {
+                turtlebot3_state_num = GET_TB3_DIRECTION;
+            }
+            else {
+                update_cmd_vel(0.0, ANGULAR_VELOCITY);
+            }
+            break;
 
-    case TB3_STOP_FORWARD:
-        update_cmd_vel(LINEAR_VELOCITY, 0.0);
-        turtlebot3_state_num = GET_TB3_DIRECTION;
-        break;
-
-    case TB3_RIGHT_STOP:
-        if (fabs(prev_robot_pose_ - robot_pose_) >= escape_range) {
+        default:
             turtlebot3_state_num = GET_TB3_DIRECTION;
-        }
-        else {
-            update_cmd_vel(0.0, -1 * ANGULAR_VELOCITY);
-        }
-        break;
-
-    case TB3_LEFT_STOP:
-        if (fabs(prev_robot_pose_ - robot_pose_) >= escape_range) {
-            turtlebot3_state_num = GET_TB3_DIRECTION;
-        }
-        else {
-            update_cmd_vel(0.0, ANGULAR_VELOCITY);
-        }
-        break;
-
-    default:
-        turtlebot3_state_num = GET_TB3_DIRECTION;
-        break;
-  }
+            break;
+    }
 }
 
 /*******************************************************************************
