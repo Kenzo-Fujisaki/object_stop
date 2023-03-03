@@ -14,8 +14,8 @@
 //
 // Authors: Taehun Lim (Darby), Ryan Shim
 
-#ifndef TURTLEBOT3_GAZEBO__TURTLEBOT3_DRIVE_HPP_
-#define TURTLEBOT3_GAZEBO__TURTLEBOT3_DRIVE_HPP_
+#ifndef OBJECT_STOP__DRIVE_OBJECT_HPP_
+#define OBJECT_STOP__DRIVE_OBJECT_HPP_
 
 #include <geometry_msgs/msg/twist.hpp>
 #include <nav_msgs/msg/odometry.hpp>
@@ -31,13 +31,10 @@
 #define LEFT   1
 #define RIGHT  2
 
-#define LINEAR_VELOCITY  0.3
-#define ANGULAR_VELOCITY 1.5
-
 #define GET_TB3_DIRECTION 0
-#define TB3_STOP_FORWARD 1
-#define TB3_RIGHT_STOP 2
-#define TB3_LEFT_STOP 3
+#define TB3_DRIVE_FORWARD 1
+#define TB3_RIGHT_DRIVE 2
+#define TB3_LEFT_DRIVE 3
 
 class Object_stop : public rclcpp::Node
 {
@@ -67,4 +64,4 @@ private:
     void scan_callback(const sensor_msgs::msg::LaserScan::SharedPtr msg);
     void odom_callback(const nav_msgs::msg::Odometry::SharedPtr msg);
 };
-#endif  // TURTLEBOT3_GAZEBO__TURTLEBOT3_DRIVE_HPP_
+#endif

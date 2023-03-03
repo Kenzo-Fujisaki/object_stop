@@ -31,15 +31,12 @@ Object_stop::Object_stop()
     robot_pose_ = 0.0;
     prev_robot_pose_ = 0.0;
 
-    /************************************************************
-    ** Initialise ROS publishers and subscribers
-    ************************************************************/
     auto qos = rclcpp::QoS(rclcpp::KeepLast(10));
 
-  // Initialise publishers
+  //publisher
     cmd_vel_pub_ = this->create_publisher<geometry_msgs::msg::Twist>("cmd_vel", qos);
 
-  // Initialise subscribers
+  //subscriber
     scan_sub_ = this->create_subscription<sensor_msgs::msg::LaserScan>(
         "scan", \
         rclcpp::SensorDataQoS(), \
@@ -51,9 +48,6 @@ Object_stop::Object_stop()
     odom_sub_ = this->create_subscription<nav_msgs::msg::Odometry>(
         "odom", qos, std::bind(&Object_stop::odom_callback, this, std::placeholders::_1));
 
-    /************************************************************
-    ** Initialise ROS timers
-    ************************************************************/
     update_timer_ = this->create_wall_timer(10ms, std::bind(&Object_stop::update_callback, this));
 
     RCLCPP_INFO(this->get_logger(), "Turtlebot3 simulation node has been initialised");
@@ -64,9 +58,6 @@ Object_stop::~Object_stop()
     RCLCPP_INFO(this->get_logger(), "Turtlebot3 simulation node has been terminated");
 }
 
-/********************************************************************************
-** Callback functions for ROS subscribers
-********************************************************************************/
 void Object_stop::odom_callback(const nav_msgs::msg::Odometry::SharedPtr msg)
 {
     tf2::Quaternion q(
@@ -104,14 +95,14 @@ void Object_stop::update_cmd_vel(double linear, double angular)
     cmd_vel_pub_->publish(cmd_vel);
 }
 
-/********************************************************************************
-** Update functions
-********************************************************************************/
+
 void Object_stop::update_callback()
 {
     static uint8_t turtlebot3_state_num = 0;
+    //回転角
     double escape_range = 30.0 * DEG2RAD;
-    double check_forward_dist = 0.7;
+
+    double check_forward_dist = 0.6;
     double check_side_dist = 0.6;
 
     switch (turtlebot3_state_num) {
@@ -119,43 +110,43 @@ void Object_stop::update_callback()
             if (scan_data_[CENTER] > check_forward_dist) {
                 if (scan_data_[LEFT] < check_side_dist) {
                     prev_robot_pose_ = robot_pose_;
-                    turtlebot3_state_num = TB3_RIGHT_STOP;
+                    turtlebot3_state_num = TB3_RIGHT_DRIVE;
                 }
                 else if (scan_data_[RIGHT] < check_side_dist) {
                     prev_robot_pose_ = robot_pose_;
-                    turtlebot3_state_num = TB3_LEFT_STOP;
+                    turtlebot3_state_num = TB3_LEFT_DRIVE;
                 }
                 else {
-                    turtlebot3_state_num =TB3_STOP_FORWARD;
+                    turtlebot3_state_num =TB3_DRIVE_FORWARD;
                 }
             }
 
             if (scan_data_[CENTER] < check_forward_dist) {
                 prev_robot_pose_ = robot_pose_;
-                turtlebot3_state_num = TB3_RIGHT_STOP;
+                turtlebot3_state_num = TB3_DRIVE_FORWARD;
             }
             break;
 
-        case TB3_STOP_FORWARD:
-            update_cmd_vel(LINEAR_VELOCITY, 0.0);
+        case TB3_DRIVE_FORWARD:
+            update_cmd_vel(0.3, 0.0);
             turtlebot3_state_num = GET_TB3_DIRECTION;
             break;
 
-        case TB3_RIGHT_STOP:
+        case TB3_RIGHT_DRIVE:
             if (fabs(prev_robot_pose_ - robot_pose_) >= escape_range) {
                 turtlebot3_state_num = GET_TB3_DIRECTION;
             }
             else {
-                update_cmd_vel(0.0, -1 * ANGULAR_VELOCITY);
+                update_cmd_vel(0.0, 0.0);
             }
             break;
 
-        case TB3_LEFT_STOP:
+        case TB3_LEFT_DRIVE:
             if (fabs(prev_robot_pose_ - robot_pose_) >= escape_range) {
                 turtlebot3_state_num = GET_TB3_DIRECTION;
             }
             else {
-                update_cmd_vel(0.0, ANGULAR_VELOCITY);
+                update_cmd_vel(0.0, 0.0);
             }
             break;
 
@@ -165,9 +156,6 @@ void Object_stop::update_callback()
     }
 }
 
-/*******************************************************************************
-** Main
-*******************************************************************************/
 int main(int argc, char ** argv)
 {
     rclcpp::init(argc, argv);
